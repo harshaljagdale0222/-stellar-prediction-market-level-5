@@ -1,5 +1,7 @@
 # 🚀 Stellar Predict - Level 5
 
+![StellarPredict Home Dashboard](./assets/home.png)
+
 Welcome to **Stellar Predict**, a fully decentralized prediction market platform built on the **Stellar Soroban** blockchain. This project represents the pinnacle of decentralized application development, featuring a robust multi-wallet ecosystem, advanced smart contract architecture, and a premium user experience.
 
 ---
@@ -26,6 +28,8 @@ Our core logic is built with Rust on the Soroban smart contract platform:
 *   **Collateral Management**: Secure handling of assets for placing bets.
 
 ### 3. Premium User Experience (UX)
+![StellarPredict Trading Interface](./assets/prediction.png)
+
 *   **Real-time Sentiment**: Integrated sentiment tracking (Yes vs No) for every market.
 *   **Interactive Visuals**: Confetti celebrations for successful trades.
 *   **Optimistic UI**: Smooth and responsive transitions for a modern feel.

@@ -7,7 +7,7 @@ Welcome to **Stellar Predict**, a fully decentralized prediction market platform
 ## 🔗 Important Links (Submission Requirements)
 *   **Live Demo UI**: [stellar-prediction-market-level-5.vercel.app](https://stellar-prediction-market-level-5.vercel.app/)
 *   **Architecture Document**: [ARCHITECTURE.md](./ARCHITECTURE.md)
-*   **MVP Demo Video**: 👉 `[🔴 ADD YOUR VIDEO LINK HERE]` 👈 (Loom/YouTube)
+*   **MVP Demo Video**: 👉 [Watch the Loom Demo Video](https://www.loom.com/share/cd5dfb1ff78a4526890882e7f014e246) 👈
 
 ---
 

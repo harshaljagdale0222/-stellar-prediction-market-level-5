@@ -437,8 +437,45 @@ export default function MarketPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen grid-bg flex items-center justify-center">
-        <div className="w-12 h-12 rounded-full border-2 border-violet-500/30 border-t-violet-500 animate-spin" />
+      <div className="min-h-screen grid-bg">
+        <Navbar address={walletAddress} onOpenModal={() => setShowWalletModal(true)} />
+        <main className="max-w-7xl mx-auto px-6 pt-24 pb-16">
+          {/* Skeleton Breadcrumb */}
+          <div className="flex items-center gap-2 mb-6">
+            <div className="h-4 w-16 bg-white/5 rounded-full animate-pulse" />
+            <span className="text-slate-600">/</span>
+            <div className="h-4 w-52 bg-white/5 rounded-full animate-pulse" />
+          </div>
+
+          {/* Skeleton Header Card */}
+          <div className="glass rounded-2xl p-6 mb-6">
+            <div className="flex items-start gap-4">
+              <div className="w-16 h-16 rounded-2xl bg-white/5 animate-pulse shrink-0" />
+              <div className="flex-1 space-y-3">
+                <div className="h-4 w-20 bg-white/5 rounded-full animate-pulse" />
+                <div className="h-7 w-3/4 bg-white/5 rounded-lg animate-pulse" />
+                <div className="h-4 w-1/2 bg-white/5 rounded-full animate-pulse" />
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-4 mt-5 pt-5 border-t border-white/5">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <div className="h-3 w-16 bg-white/5 rounded-full animate-pulse" />
+                  <div className="h-6 w-24 bg-white/5 rounded-lg animate-pulse" />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Skeleton Two-Column */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+              <div className="glass rounded-2xl h-44 animate-pulse" />
+              <div className="glass rounded-2xl h-72 animate-pulse" />
+            </div>
+            <div className="glass rounded-2xl h-64 animate-pulse" />
+          </div>
+        </main>
       </div>
     );
   }

@@ -13,6 +13,8 @@ interface WalletModalProps {
 function WalletModal({ onClose }: WalletModalProps) {
   const { address: currentAddress, connect, disconnect, loading, error, setError } = useWallet();
   const [network, setNetwork] = useState<string | null>(null);
+  const [connectingWallet, setConnectingWallet] = useState<string | null>(null);
+  const [copySuccess, setCopySuccess] = useState(false);
 
   const options = [
     {
@@ -40,10 +42,13 @@ function WalletModal({ onClose }: WalletModalProps) {
 
   const handleConnect = async (type: "freighter" | "albedo" | "xbull") => {
     try {
+      setConnectingWallet(type);
       await connect(type);
       onClose();
     } catch (e) {
       // Error is handled by context
+    } finally {
+      setConnectingWallet(null);
     }
   };
 
@@ -106,10 +111,16 @@ function WalletModal({ onClose }: WalletModalProps) {
             <button
               onClick={() => {
                 navigator.clipboard.writeText(currentAddress);
+                setCopySuccess(true);
+                setTimeout(() => setCopySuccess(false), 2000);
               }}
-              className="w-full py-2.5 glass rounded-xl text-sm text-slate-300 hover:text-white border border-white/10 hover:border-violet-400/30 transition-all mb-3"
+              className="w-full py-2.5 glass rounded-xl text-sm border border-white/10 hover:border-violet-400/30 transition-all mb-3 flex items-center justify-center gap-2"
             >
-              📋 Copy Address
+              {copySuccess ? (
+                <span className="text-green-400 font-semibold">✅ Copied!</span>
+              ) : (
+                <span className="text-slate-300 hover:text-white">📋 Copy Address</span>
+              )}
             </button>
 
             {/* Disconnect */}
@@ -140,18 +151,31 @@ function WalletModal({ onClose }: WalletModalProps) {
                   key={opt.id}
                   onClick={() => handleConnect(opt.id)}
                   disabled={loading}
-                  className="w-full flex items-center gap-4 glass rounded-2xl p-4 border border-white/5 hover:border-violet-500/30 transition-all group disabled:opacity-50 text-left"
+                  className={`w-full flex items-center gap-4 glass rounded-2xl p-4 border transition-all group disabled:cursor-not-allowed text-left ${
+                    connectingWallet === opt.id
+                      ? "border-violet-500/50 bg-violet-500/5"
+                      : "border-white/5 hover:border-violet-500/30"
+                  }`}
                 >
                   <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${opt.color} flex items-center justify-center text-xl shrink-0 shadow-lg`}>
-                    {opt.icon}
+                    {connectingWallet === opt.id ? (
+                      <span className="w-5 h-5 rounded-full border-2 border-white/30 border-t-white animate-spin block" />
+                    ) : opt.icon}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold text-white group-hover:text-violet-300 transition-colors truncate">
                       {opt.name}
                     </p>
-                    <p className="text-xs text-slate-500 truncate">{opt.description}</p>
+                    <p className="text-xs truncate">
+                      {connectingWallet === opt.id
+                        ? <span className="text-violet-400 animate-pulse">Connecting...</span>
+                        : <span className="text-slate-500">{opt.description}</span>
+                      }
+                    </p>
                   </div>
-                  <span className="text-slate-500 group-hover:text-violet-400 transition-colors">→</span>
+                  <span className={`transition-colors ${
+                    connectingWallet === opt.id ? "text-violet-400" : "text-slate-500 group-hover:text-violet-400"
+                  }`}>→</span>
                 </button>
               ))}
             </div>

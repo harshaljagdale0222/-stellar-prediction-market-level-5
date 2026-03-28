@@ -4,6 +4,13 @@ Welcome to **Stellar Predict**, a fully decentralized prediction market platform
 
 ---
 
+## 🔗 Important Links (Submission Requirements)
+*   **Live Demo UI**: [stellar-prediction-market-level-5.vercel.app](https://stellar-prediction-market-level-5.vercel.app/)
+*   **Architecture Document**: [ARCHITECTURE.md](./ARCHITECTURE.md)
+*   **MVP Demo Video**: 👉 `[🔴 ADD YOUR VIDEO LINK HERE]` 👈 (Loom/YouTube)
+
+---
+
 ## 🌟 Key Features
 
 ### 1. Multi-Wallet Integration
@@ -76,16 +83,16 @@ All user responses have been exported and are available for review:
 
 📊 **[View Response Sheet](https://docs.google.com/spreadsheets/d/1nz_0K7f3Ic_0r1myMdyvlGF89KjEEFW1JRM_u7wb6vM/edit?usp=sharing)**
 
-### 📝 Feedback Summary
+### 📝 Feedback Summary & Verified Wallets (5+ Users requirement)
 
-| # | User | Key Feedback |
-|---|------|--------------|
-| 1 | Rushikesh Gaiwal | *"Impressive UI but lag in between, please improve UX"* |
-| 2 | Shubham Golekar | *"Need improvements in integration of wallet"* |
-| 3 | Samruddhi Nevse | *"All good"* |
-| 4 | Sudhakar Sutar | *"Good website"* |
-| 5 | Dnyaneshwari Badhe | *"Useful"* |
-| 6 | Ved Kishor Malkunaik | *"Very nice bro"* |
+| # | User | Stellar Wallet Address (Verified) | Key Feedback |
+|---|------|-----------------------------------|--------------|
+| 1 | Rushikesh Gaiwal | `GBXU3XKT5W66VJOTZBEINMAXQYGJ7HYNFWITQQ6VQKZBHDQ2EX5ACG2F` | *"Impressive UI but lag in between, please improve UX"* |
+| 2 | Shubham Golekar | `GA3PMUXWSCWLT2FMQ76PODPODHLJHOWAHTD7JGOWHGGE5FZ3WWF6EJBO` | *"Need improvements in integration of wallet"* |
+| 3 | Samruddhi Nevse | `GCWHSFPEKYG5OYYQT2M5VRRVM3LSCXACMBNKSZUTH7XCIUGQTGFDAYWD` | *"All good"* |
+| 4 | Sudhakar Sutar | `GALULA4PSYS4AVX7AIUDZ5IVUUWJAGT4BECMICA3JQMCO3HICKQEKJXS` | *"Good website"* |
+| 5 | Dnyaneshwari Badhe | `GDLLRKGBCPUYRJE3HFYUNI46PQQNA5HPP6QR43FDPZJXNVHEW5QJ5LKV` | *"Useful"* |
+| 6 | Ved Kishor Malkunaik | `GACUAJJ5XYAOHFRNASQU472IEZHMU5G37CLNPGKA7HK55MEFZV6ZJQ45` | *"Very nice bro"* |
 
 **Overall Sentiment:** Positive ✅ — Users appreciate the UI and core functionality. Key improvement areas: performance & wallet UX.
 

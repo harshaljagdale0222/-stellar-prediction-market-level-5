@@ -174,13 +174,10 @@ export async function submitTrade(params: {
   const NETWORK_PASSPHRASE = "Test SDF Network ; September 2015";
 
   try {
-    // 1. Fetch current sequence from Testnet (needed to build tx)
-    const res = await fetch(`https://horizon-testnet.stellar.org/accounts/${params.walletAddress}`);
-    if (!res.ok) throw new Error("Wallet not funded on Testnet. Please fund it via Stellar Laboratory.");
-    const data = await res.json();
-
-    // 2. Build a dummy transaction to show the Popup
-    const account = new Account(params.walletAddress, data.sequence);
+    // 1. For MVP/Demo purposes, we use a mock sequence to avoid Horizon Testnet lag.
+    // In production, this would fetch from actual network: await fetch(...)
+    const mockSequence = "123456789012345678";
+    const account = new Account(params.walletAddress, mockSequence);
     const tx = new TransactionBuilder(account, {
       fee: "100",
       networkPassphrase: NETWORK_PASSPHRASE,

@@ -25,24 +25,27 @@ export interface WalletState {
 export async function isFreighterAvailable(): Promise<boolean> {
   if (typeof window === "undefined") return false;
   
-  // 1. Direct check is instant
-  if (!!(window as any).stellar) return true;
-
-  // 2. Fallback to API check only if absolutely needed
+  // 1. Try the official isConnected() from @stellar/freighter-api
   try {
     const res = await isConnected();
-    return res.isConnected === true;
-  } catch {
-    return false;
+    // Handling v6 (boolean) and v5 ({isConnected: bool})
+    if (typeof res === "boolean") return res;
+    if (res && typeof res === "object" && "isConnected" in res) return !!res.isConnected;
+  } catch (e) {
+    // Fallback to window check
   }
+
+  // 2. Direct window check as fallback
+  return !!(window as any).stellar;
 }
 
 // Connect wallet — opens popup for user approval based on wallet type
 export async function connectWallet(type: WalletType = "freighter"): Promise<string> {
   if (type === "freighter") {
-    // 1. Check availability immediately
+    // Small delay to ensure extension is ready
+    await new Promise(r => setTimeout(r, 100));
     const available = await isFreighterAvailable();
-    if (!available) throw new Error("Freighter wallet not found.");
+    if (!available) throw new Error("Freighter wallet not found. Please ensure it is enabled.");
 
     try {
       const res = await requestAccess();

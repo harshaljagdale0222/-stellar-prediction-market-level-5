@@ -233,12 +233,6 @@ export default function HomePage() {
     });
   }, []);
 
-  const dismissToast = useCallback(() => setToast(null), []);
-
-  const handleWalletConnect = useCallback((address: string) => {
-    setWalletAddress(address || null);
-  }, []);
-
   const categories = ["All", ...Array.from(new Set(markets.map((m) => m.category)))];
   const filtered = filter === "All" ? markets : markets.filter((m) => m.category === filter);
 
@@ -262,8 +256,8 @@ export default function HomePage() {
               key={cat}
               onClick={() => setFilter(cat)}
               className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-all ${filter === cat
-                  ? "bg-violet-600 border-violet-500 text-white"
-                  : "glass border-white/10 text-slate-400 hover:border-violet-400/30 hover:text-slate-200"
+                ? "bg-violet-600 border-violet-500 text-white"
+                : "glass border-white/10 text-slate-400 hover:border-violet-400/30 hover:text-slate-200"
                 }`}
             >
               {cat}

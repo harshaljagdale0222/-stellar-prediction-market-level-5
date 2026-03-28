@@ -123,7 +123,7 @@ Based on the collected user feedback, here is our roadmap for the next phase:
 - Real-time toast notifications for trade confirmations
 - Alerts for market resolution events
 
-> 🔗 **Improvement Commit:** *(will be updated after next iteration commit)*
+> 🔗 **Improvement Commit:** [View on GitHub](https://github.com/harshaljagdale0222/stellar-prediction-market-level-5/commit/a09edb7)
 
 ---
 

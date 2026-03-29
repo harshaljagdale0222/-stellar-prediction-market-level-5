@@ -11,7 +11,7 @@ import {
   signTransaction as signWithFreighter,
 } from "@stellar/freighter-api";
 import albedo from "@albedo-link/intent";
-import { TransactionBuilder, Account, Operation } from "@stellar/stellar-sdk";
+import { TransactionBuilder, Account, Operation, Networks, Transaction, Horizon } from "@stellar/stellar-sdk";
 
 export type WalletType = "freighter" | "albedo" | "xbull";
 
@@ -171,20 +171,20 @@ export async function submitTrade(params: {
   walletAddress: string;
   walletType: WalletType;
 }): Promise<{ txHash: string; message: string }> {
-  const NETWORK_PASSPHRASE = "Test SDF Network ; September 2015";
-
   try {
-    // 1. For MVP/Demo purposes, we use a mock sequence to avoid Horizon Testnet lag.
-    // In production, this would fetch from actual network: await fetch(...)
-    const mockSequence = "123456789012345678";
-    const account = new Account(params.walletAddress, mockSequence);
+    const server = new Horizon.Server("https://horizon-testnet.stellar.org");
+    
+    // 1. Fetch the real sequence number for the user's wallet
+    const account = await server.loadAccount(params.walletAddress);
+    
+    // 2. Build the transaction using an on-chain activity signature (manageData)
     const tx = new TransactionBuilder(account, {
       fee: "100",
-      networkPassphrase: NETWORK_PASSPHRASE,
+      networkPassphrase: Networks.TESTNET,
     })
       .addOperation(
         Operation.manageData({
-          name: "StellarPredict",
+          name: "MarketActivity",
           value: params.action.toUpperCase(),
         })
       )
@@ -196,7 +196,7 @@ export async function submitTrade(params: {
 
     // 3. Trigger signing based on wallet type
     if (params.walletType === "freighter") {
-      const response = await signWithFreighter(xdr, { networkPassphrase: NETWORK_PASSPHRASE });
+      const response = await signWithFreighter(xdr, { networkPassphrase: Networks.TESTNET });
       if (response.error) throw new Error(response.error);
       signedXdr = response.signedTxXdr || "";
     } else if (params.walletType === "albedo") {
@@ -204,13 +204,17 @@ export async function submitTrade(params: {
       signedXdr = response.signed_envelope_xdr || "";
     } else if (params.walletType === "xbull") {
       const xbull = (window as any).xBullWallet;
-      signedXdr = await xbull.sign({ xdr, network: NETWORK_PASSPHRASE });
+      signedXdr = await xbull.sign({ xdr, network: Networks.TESTNET });
     } else {
       throw new Error("Unknown wallet type");
     }
 
     if (!signedXdr) throw new Error("Transaction was not signed.");
 
+    // 4. Submit the signed transaction to the Stellar Testnet
+    const signedTx = TransactionBuilder.fromXDR(signedXdr, Networks.TESTNET) as Transaction;
+    const submitResponse = await server.submitTransaction(signedTx);
+    
     // Generate nice customized success message for the user based on action
     let message = "Transaction successful!";
     if (params.action === "buy_yes") message = "Congratulations! Successfully bought YES tokens! 🚀";
@@ -218,11 +222,8 @@ export async function submitTrade(params: {
     if (params.action === "sell_yes") message = "Successfully sold your position! 💸";
     if (params.action === "add_liquidity") message = "Awesome! Liquidity added to the pool! 💧";
 
-    // Format the transaction hash properly (simulated hash)
-    const finalHash = Array.from(crypto.getRandomValues(new Uint8Array(32)))
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("")
-      .toUpperCase();
+    // Use the real transaction hash from the network response
+    const finalHash = submitResponse.hash;
 
     return { txHash: finalHash, message };
   } catch (error: any) {

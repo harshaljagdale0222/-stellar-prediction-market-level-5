@@ -92,8 +92,26 @@ Based on feedback, we completed one iteration and planned the next phase:
 ---
 
 ## 📂 Project Structure
-*   `/app`: Next.js application frontend.
-*   `/contracts/market`: Soroban smart contract logic.
+
+```text
+.
+├── app/                        # Next.js 14 Frontend Application
+│   ├── components/             # Reusable UI Components
+│   ├── context/                # Wallet & Global State Management
+│   ├── lib/                    # Stellar/Soroban Interaction Logic
+│   │   ├── stellar.ts          # Core Transaction Functions
+│   │   └── utils.ts            # Formatting Utilities
+│   ├── public/                 # Static Assets for Demo
+│   └── (routes)/               # App Router Pages (Market, Dashboard)
+├── contracts/                  # Soroban Smart Contracts (Rust)
+│   ├── market/                 # Prediction Market Core Logic
+│   └── Cargo.toml              # Rust Dependency Configuration
+├── assets/                     # Project UI Screenshots & Banners
+├── proof1.png                  # Transaction Proof - Summary
+├── proof2.png                  # Transaction Proof - Details
+├── ARCHITECTURE.md             # Detailed System Design
+└── README.md                   # Main Project Documentation
+```
 
 ---
 

@@ -27,4 +27,6 @@ Thumbs.db
 /tmp/
 .next/
 dist/
-build/
+
+# Project data
+responses.csv

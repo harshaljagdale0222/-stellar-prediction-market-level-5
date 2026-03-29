@@ -189,15 +189,20 @@ function WalletModal({ onClose }: WalletModalProps) {
 
             {error && (
               <div className="glass rounded-xl p-3 border border-red-500/20 mb-3">
-                <p className="text-xs text-red-400">{error}</p>
-                {error.includes("install") && (
+                <p className="text-xs text-red-400 font-medium">{error}</p>
+                {error.includes("not found") && (
+                  <p className="text-[10px] text-slate-500 mt-2">
+                    Try refreshing the page or checking if the extension is enabled.
+                  </p>
+                )}
+                {(error.includes("install") || error.includes("not found")) && (
                   <a
                     href="https://www.freighter.app/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-violet-400 hover:text-violet-300 underline mt-1 inline-block"
+                    className="text-xs text-violet-400 hover:text-violet-300 underline mt-2 inline-block"
                   >
-                    Install Freighter →
+                    Get Freighter →
                   </a>
                 )}
               </div>

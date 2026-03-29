@@ -21,31 +21,41 @@ export interface WalletState {
   network: string;
 }
 
-// Check if Freighter extension is installed
+// Check if Freighter extension is installed with 500ms retry loop
 export async function isFreighterAvailable(): Promise<boolean> {
   if (typeof window === "undefined") return false;
   
-  // 1. Try the official isConnected() from @stellar/freighter-api
-  try {
-    const res = await isConnected();
-    // Handling v6 (boolean) and v5 ({isConnected: bool})
-    if (typeof res === "boolean") return res;
-    if (res && typeof res === "object" && "isConnected" in res) return !!res.isConnected;
-  } catch (e) {
-    // Fallback to window check
+  // 1. First try: Direct check for window objects
+  if (!!(window as any).stellar || !!(window as any).freighter) return true;
+
+  // 2. Retry loop for 500ms (to handle extension loading delay)
+  const start = Date.now();
+  while (Date.now() - start < 500) {
+    try {
+      const res = await isConnected();
+      if (typeof res === "boolean" && res) return true;
+      if (res && typeof res === "object" && "isConnected" in res && res.isConnected) return true;
+    } catch (e) {}
+
+    // Fallback window check during loop
+    if (!!(window as any).stellar || !!(window as any).freighter) return true;
+    
+    await new Promise(r => setTimeout(r, 100)); // wait 100ms before next try
   }
 
-  // 2. Direct window check as fallback
-  return !!(window as any).stellar;
+  return false;
 }
 
 // Connect wallet — opens popup for user approval based on wallet type
 export async function connectWallet(type: WalletType = "freighter"): Promise<string> {
   if (type === "freighter") {
-    // Small delay to ensure extension is ready
-    await new Promise(r => setTimeout(r, 100));
+    // 300ms initial delay for UI smoothness
+    await new Promise(r => setTimeout(r, 300));
+    
     const available = await isFreighterAvailable();
-    if (!available) throw new Error("Freighter wallet not found. Please ensure it is enabled.");
+    if (!available) {
+      throw new Error("Freighter wallet not found. Please ensure it is installed and enabled in your browser.");
+    }
 
     try {
       const res = await requestAccess();
@@ -183,9 +193,10 @@ export async function submitTrade(params: {
       networkPassphrase: Networks.TESTNET,
     })
       .addOperation(
-        Operation.manageData({
-          name: "MarketActivity",
-          value: params.action.toUpperCase(),
+        Operation.invokeContractFunction({
+          contract: params.contractAddress,
+          function: "submit_prediction_" + params.action.toUpperCase(),
+          args: [],
         })
       )
       .setTimeout(30)

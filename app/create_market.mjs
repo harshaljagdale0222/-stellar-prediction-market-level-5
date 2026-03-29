@@ -31,9 +31,9 @@ async function createMarket() {
             contractAddress: Address.fromString(factoryId).toScAddress(),
             functionName: 'create_market',
             args: [
-                Address.fromString(deployer.publicKey()).toScVal(), // caller
-                Address.fromString(oracle).toScVal(),             // oracle
-                Address.fromString(collateralToken).toScVal()     // collateral
+                new Address(deployer.publicKey()).toScVal(), // caller
+                new Address(oracle).toScVal(),             // oracle
+                new Address(collateralToken).toScVal()     // collateral
             ]
         })),
         auth: []

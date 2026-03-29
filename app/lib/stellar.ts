@@ -19,6 +19,7 @@ import {
   Transaction,
   Horizon,
   nativeToScVal,
+  rpc,
 } from "@stellar/stellar-sdk";
 
 export type WalletType = "freighter" | "albedo" | "xbull";
@@ -191,26 +192,25 @@ export async function submitTrade(params: {
 }): Promise<{ txHash: string; message: string }> {
   try {
     const server = new Horizon.Server("https://horizon-testnet.stellar.org");
+    // Use the official testnet RPC for simulation
+    const rpcServer = new rpc.Server("https://soroban-testnet.stellar.org");
     
     // 1. Fetch the real sequence number for the user's wallet
     const account = await server.loadAccount(params.walletAddress);
     
-    // 2. Prepare Arguments in Soroban ScVal format
-    // We use BigInt for amounts to handle large integers (i128)
-    // Using 7 decimal places as standard for Soroban Soroban logic
+    // 2. Prepare Arguments
     const amountInt = BigInt(Math.floor(params.amount * 10000000));
     const args = [
       nativeToScVal(params.walletAddress, { type: "address" }),
       nativeToScVal(amountInt, { type: "i128" }),
-      nativeToScVal(BigInt(0), { type: "i128" }), // min_out / max_in (slippage) - set to 0 to ensure pass
+      nativeToScVal(BigInt(0), { type: "i128" }), // min_out
     ];
 
-    // Map UI action directly to contract function name
-    const functionName = params.action; // "buy_yes", "buy_no", "sell_yes", "add_liquidity"
+    const functionName = params.action;
 
-    // 3. Build the transaction with Soroban support
-    const tx = new TransactionBuilder(account, {
-      fee: "1500", // Standard fee for Soroban operations
+    // 3. Build the initial transaction
+    let tx = new TransactionBuilder(account, {
+      fee: "1500", 
       networkPassphrase: Networks.TESTNET,
     })
       .addOperation(
@@ -220,13 +220,25 @@ export async function submitTrade(params: {
           args: args,
         })
       )
-      .setTimeout(60) // Extended timeout for network overhead
+      .setTimeout(60)
       .build();
+
+    // --- CRITICAL SOROBAN FIX: SIMULATION ---
+    console.log("Simulating transaction...");
+    const simRes = await rpcServer.simulateTransaction(tx);
+    
+    if (rpc.Api.isSimulationError(simRes)) {
+      throw new Error(`Simulation failed: ${simRes.error}`);
+    }
+
+    // Assemble the transaction with the footprint and resources from simulation
+    tx = rpc.assembleTransaction(tx, simRes).build();
+    // ----------------------------------------
 
     const xdr = tx.toXDR();
     let signedXdr: string;
 
-    // 4. Trigger signing based on wallet type
+    // 4. Trigger signing
     if (params.walletType === "freighter") {
       const response = await signWithFreighter(xdr, { networkPassphrase: Networks.TESTNET });
       if (response.error) throw new Error(response.error);
@@ -243,22 +255,17 @@ export async function submitTrade(params: {
 
     if (!signedXdr) throw new Error("Transaction was not signed.");
 
-    // 5. Submit the signed transaction to the Stellar Testnet
+    // 5. Submit
     const signedTx = TransactionBuilder.fromXDR(signedXdr, Networks.TESTNET) as Transaction;
     const submitResponse = await server.submitTransaction(signedTx);
     
-    // Generate nice customized success message for the user based on action
     let message = "Transaction successful!";
-    if (params.action === "buy_yes") message = "Congratulations! Successfully bought YES tokens! 🚀";
-    if (params.action === "buy_no") message = "Congratulations! Successfully bought NO tokens! 🚀";
-    if (params.action === "sell_yes") message = "Successfully sold your position! 💸";
-    if (params.action === "add_liquidity") message = "Awesome! Liquidity added to the pool! 💧";
-
-    // Use the real transaction hash from the network response
-    const finalHash = submitResponse.hash;
-
-    return { txHash: finalHash, message };
+    if (params.action === "buy_yes") message = "Successfully bought YES tokens! 🚀";
+    if (params.action === "buy_no") message = "Successfully bought NO tokens! 🚀";
+    
+    return { txHash: submitResponse.hash, message };
   } catch (error: any) {
-    throw new Error(error.message || "Wallet transaction failed or was rejected.");
+    console.error("Trade Error:", error);
+    throw new Error(error.message || "Wallet transaction failed.");
   }
 }

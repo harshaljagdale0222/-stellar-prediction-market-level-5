@@ -10,6 +10,9 @@ Welcome to **Stellar Predict**, a fully decentralized prediction market platform
 *   **Live Demo UI**: [stellar-prediction-market-level-5.vercel.app](https://stellar-prediction-market-level-5.vercel.app/)
 *   **Architecture Document**: [ARCHITECTURE.md](./ARCHITECTURE.md)
 *   **MVP Demo Video**: 👉 [Watch the Loom Demo Video](https://www.loom.com/share/cd5dfb1ff78a4526890882e7f014e246) 👈
+*   **Deployed Smart Contract IDs (Testnet)**:
+    *   `CB5ZKRVTZCSERHLYMLXZ6EWSVJ3DY7J6JVRMUKPNYDS2VGODLCLE4V37`
+    *   `CDCZYILWPDOZMFE3YK2SY6ES6NBN53GXVOFTDH2GSOQ7DKLQ5FNJCN3L`
 
 ---
 

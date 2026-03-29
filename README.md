@@ -44,7 +44,7 @@ Experience seamless connectivity with:
 
 ---
 
-## 🏆 Proof of Blockchain Transactions (Stellar Expert)
+## 🏆 Proof of Blockchain Transactions (Stellar Explorer)
 To verify that our smart contract interactions are successfully recorded on the Stellar Testnet, we have included undeniable on-chain proof. The following screenshots from **Stellar Expert** demonstrate real-world transaction data entries, priority fees, and correct trade memos.
 
 ![Blockchain Proof 1 - Transactions List](./proof1.png)
@@ -56,18 +56,19 @@ To verify that our smart contract interactions are successfully recorded on the 
 ---
 
 ## 👥 User Feedback & Onboarding
-We onboarded **6 real testnet users** and collected their feedback to validate our MVP.
+We onboarded **7 real testnet users** and collected their feedback to validate our MVP.
 
 🔗 **[View Response Sheet (Google Sheet)](https://docs.google.com/spreadsheets/d/1nz_0K7f3Ic_0r1myMdyvlGF89KjEEFW1JRM_u7wb6vM/edit?usp=sharing)**
 
-| # | User | Stellar Wallet Address (Verified) | Key Feedback |
-|---|------|-----------------------------------|--------------|
-| 1 | Rushikesh Gaiwal | `GBXU3XKT5W66VJOTZBEINMAXQYGJ7HYNFWITQQ6VQKZBHDQ2EX5ACG2F` | *"Impressive UI but lag in between"* |
-| 2 | Shubham Golekar | `GA3PMUXWSCWLT2FMQ76PODPODHLJHOWAHTD7JGOWHGGE5FZ3WWF6EJBO` | *"Need improvements in integration"* |
-| 3 | Samruddhi Nevse | `GCWHSFPEKYG5OYYQT2M5VRRVM3LSCXACMBNKSZUTH7XCIUGQTGFDAYWD` | *"All good"* |
-| 4 | Sudhakar Sutar | `GALULA4PSYS4AVX7AIUDZ5IVUUWJAGT4BECMICA3JQMCO3HICKQEKJXS` | *"Good website"* |
-| 5 | Dnyaneshwari Badhe | `GDLLRKGBCPUYRJE3HFYUNI46PQQNA5HPP6QR43FDPZJXNVHEW5QJ5LKV` | *"Useful"* |
-| 6 | Ved Kishor Malkunaik | `GACUAJJ5XYAOHFRNASQU472IEZHMU5G37CLNPGKA7HK55MEFZV6ZJQ45` | *"Very nice bro"* |
+| # | User | Rating | Stellar Wallet Address (Verified) | Key Feedback |
+|---|------|--------|-----------------------------------|--------------|
+| 1 | Rushikesh Gaiwal | ⭐⭐⭐⭐⭐ | `GBXU3XKT5W66VJOTZBEINMAXQYGJ7HYNFWITQQ6VQKZBHDQ2EX5ACG2F` | *"Good website"* |
+| 2 | Shubham Golekar | ⭐⭐⭐⭐⭐ | `GA3PMUXWSCWLT2FMQ76PODPODHLJHOWAHTD7JGOWHGGE5FZ3WWF6EJBO` | *"Very nice bro"* |
+| 3 | Samruddhi Nevse | ⭐⭐⭐ | `GCWHSFPEKYG5OYYQT2M5VRRVM3LSCXACMBNKSZUTH7XCIUGQTGFDAYWD` | *"All good"* |
+| 4 | Sudhakar sutar | ⭐⭐⭐⭐ | `GALULA4PSYS4AVX7AIUDZ5IVUUWJAGT4BECMICA3JQMCO3HICKQEKJXS` | *"Impressive UI but lag in between please improve"* |
+| 5 | Dnyaneshwari Badhe | ⭐⭐⭐⭐⭐ | `GDLLRKGBCPUYRJE3HFYUNI46PQQNA5HPP6QR43FDPZJXNVHEW5QJ5LKV` | *"Useful"* |
+| 6 | Ved Kishor Malkunaik | ⭐⭐⭐ | `GACUAJJ5XYAOHFRNASQU472IEZHMU5G37CLNPGKA7HK55MEFZV6ZJQ45` | *"Need improvements in integration of wallets"* |
+| 7 | Nikita Biradar | ⭐⭐⭐⭐ | `GDUYCJP2F3E3WOCGKP MXOU64H2S7JNDZRE2A7YI6XW6J7WTPW3UK2XOC` | *"Good"* |
 
 ---
 

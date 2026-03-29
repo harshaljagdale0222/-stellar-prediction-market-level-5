@@ -146,11 +146,53 @@ impl PredictionMarket {
             panic!("slippage exceeded");
         }
 
-        // Send YES to user
-        yes.transfer(&e.current_contract_address(), &from, &total_yes_to_user);
-        
-        // NO tokens stay in the market (the pool absorbed them)
+    // Send YES to user
+    yes.transfer(&e.current_contract_address(), &from, &total_yes_to_user);
+    
+    // NO tokens stay in the market (the pool absorbed them)
+}
+
+/// User wants to pay `collateral_amount` to get NO tokens.
+/// This translates to:
+/// 1. Take `collateral_amount` from User.
+/// 2. Mint `collateral_amount` YES and NO tokens.
+/// 3. Add `collateral_amount` YES tokens to pool, take `NO` out.
+/// 4. Send `NO` (from pool) + `collateral_amount` NO (minted) to User.
+pub fn buy_no(e: Env, from: Address, collateral_amount: i128, min_no_out: i128) {
+    from.require_auth();
+    if collateral_amount <= 0 { panic!("amount must be positive"); }
+    if Self::is_resolved(&e) { panic!("market already resolved"); }
+
+    let collateral = TokenClient::new(&e, &Self::get_collateral(&e));
+    let yes = TokenClient::new(&e, &Self::get_yes(&e));
+    let no = TokenClient::new(&e, &Self::get_no(&e));
+
+    collateral.transfer(&from, &e.current_contract_address(), &collateral_amount);
+
+    e.invoke_contract::<()>(&Self::get_yes(&e), &Symbol::new(&e, "mint"), vec![&e, e.current_contract_address().into_val(&e), collateral_amount.into_val(&e)]);
+    e.invoke_contract::<()>(&Self::get_no(&e), &Symbol::new(&e, "mint"), vec![&e, e.current_contract_address().into_val(&e), collateral_amount.into_val(&e)]);
+
+    // Pool balances before adding the YES
+    let r_yes = yes.balance(&e.current_contract_address()) - collateral_amount;
+    let r_no = no.balance(&e.current_contract_address()) - collateral_amount;
+
+    // Add fee to the swap. 1% fee.
+    let amount_in_with_fee = (collateral_amount * 99) / 100;
+
+    // CPMM: (r_yes + amount_in_with_fee) * (r_no - out_no) = r_yes * r_no
+    // out_no = r_no - (r_yes * r_no) / (r_yes + amount_in_with_fee)
+    let numerator = r_yes * r_no;
+    let denominator = r_yes + amount_in_with_fee;
+    let p_out_no = r_no - (numerator / denominator);
+
+    let total_no_to_user = collateral_amount + p_out_no;
+    if total_no_to_user < min_no_out {
+        panic!("slippage exceeded");
     }
+
+    // Send NO to user
+    no.transfer(&e.current_contract_address(), &from, &total_no_to_user);
+}
 
     /// User wants `collateral_out` amount of collateral, by burning their YES tokens.
     /// This translates to:

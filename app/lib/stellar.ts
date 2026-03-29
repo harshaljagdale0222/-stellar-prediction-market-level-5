@@ -11,7 +11,15 @@ import {
   signTransaction as signWithFreighter,
 } from "@stellar/freighter-api";
 import albedo from "@albedo-link/intent";
-import { TransactionBuilder, Account, Operation, Networks, Transaction, Horizon } from "@stellar/stellar-sdk";
+import {
+  TransactionBuilder,
+  Account,
+  Operation,
+  Networks,
+  Transaction,
+  Horizon,
+  nativeToScVal,
+} from "@stellar/stellar-sdk";
 
 export type WalletType = "freighter" | "albedo" | "xbull";
 
@@ -173,7 +181,7 @@ export function formatProbability(p: number): string {
   return `${(p * 100).toFixed(1)}%`;
 }
 
-// Simulate submitting a trade (in a real app this would call Soroban)
+// Calls the Prediction Market smart contract on the Stellar Testnet
 export async function submitTrade(params: {
   contractAddress: string;
   action: "buy_yes" | "buy_no" | "sell_yes" | "add_liquidity";
@@ -187,25 +195,38 @@ export async function submitTrade(params: {
     // 1. Fetch the real sequence number for the user's wallet
     const account = await server.loadAccount(params.walletAddress);
     
-    // 2. Build the transaction using an on-chain activity signature (manageData)
+    // 2. Prepare Arguments in Soroban ScVal format
+    // We use BigInt for amounts to handle large integers (i128)
+    // Using 7 decimal places as standard for Soroban Soroban logic
+    const amountInt = BigInt(Math.floor(params.amount * 10000000));
+    const args = [
+      nativeToScVal(params.walletAddress, { type: "address" }),
+      nativeToScVal(amountInt, { type: "i128" }),
+      nativeToScVal(BigInt(0), { type: "i128" }), // min_out / max_in (slippage) - set to 0 to ensure pass
+    ];
+
+    // Map UI action directly to contract function name
+    const functionName = params.action; // "buy_yes", "buy_no", "sell_yes", "add_liquidity"
+
+    // 3. Build the transaction with Soroban support
     const tx = new TransactionBuilder(account, {
-      fee: "100",
+      fee: "1500", // Standard fee for Soroban operations
       networkPassphrase: Networks.TESTNET,
     })
       .addOperation(
         Operation.invokeContractFunction({
           contract: params.contractAddress,
-          function: "submit_prediction_" + params.action.toUpperCase(),
-          args: [],
+          function: functionName,
+          args: args,
         })
       )
-      .setTimeout(30)
+      .setTimeout(60) // Extended timeout for network overhead
       .build();
 
     const xdr = tx.toXDR();
     let signedXdr: string;
 
-    // 3. Trigger signing based on wallet type
+    // 4. Trigger signing based on wallet type
     if (params.walletType === "freighter") {
       const response = await signWithFreighter(xdr, { networkPassphrase: Networks.TESTNET });
       if (response.error) throw new Error(response.error);
@@ -222,7 +243,7 @@ export async function submitTrade(params: {
 
     if (!signedXdr) throw new Error("Transaction was not signed.");
 
-    // 4. Submit the signed transaction to the Stellar Testnet
+    // 5. Submit the signed transaction to the Stellar Testnet
     const signedTx = TransactionBuilder.fromXDR(signedXdr, Networks.TESTNET) as Transaction;
     const submitResponse = await server.submitTransaction(signedTx);
     

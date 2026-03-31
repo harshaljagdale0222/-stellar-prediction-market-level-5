@@ -1,13 +1,14 @@
 export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
-import * as StellarSdk from "@stellar/stellar-sdk";
 import { logUser, recordTrade } from "@/lib/db";
-
-const SPONSOR_SECRET = process.env.SPONSOR_SECRET_KEY || "SAHQMKZUKG6SRE5NDFUT7L4P2G6RYE6RYE6RYE6RYE6RYE6RYE6RYE6R"; // Use a real key in production
-const SPONSOR_KEYPAIR = StellarSdk.Keypair.fromSecret(SPONSOR_SECRET);
 
 export async function POST(req: NextRequest) {
   try {
+    // Lazy-load the Stellar SDK to avoid WebAssembly Next.js Checksum Errors during Vercel Build
+    const StellarSdk = await import("@stellar/stellar-sdk");
+    const SPONSOR_SECRET = process.env.SPONSOR_SECRET_KEY || "SAHQMKZUKG6SRE5NDFUT7L4P2G6RYE6RYE6RYE6RYE6RYE6RYE6RYE6R"; 
+    const SPONSOR_KEYPAIR = StellarSdk.Keypair.fromSecret(SPONSOR_SECRET);
+
     const { xdr, userAddress, marketId, amount, action } = await req.json();
 
     if (!xdr || !userAddress) {

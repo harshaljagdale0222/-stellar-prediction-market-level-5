@@ -28,6 +28,7 @@ export async function POST(req: Request) {
     volume: 0,
     liquidity: 0,
     resolved: false,
+    trades: [],
   });
 
   return NextResponse.json({ market }, { status: 201 });

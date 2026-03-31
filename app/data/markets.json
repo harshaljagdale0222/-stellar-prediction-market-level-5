@@ -1,58 +1,88 @@
 [
   {
     "id": "1",
-    "contractAddress": "CDCZYILWPDOZMFE3YK2SY6ES6NBN53GXVOFTDH2GSOQ7DKLQ5FNJCN3L",
+    "contractAddress": "CB5ZKRVTZCSERHLYMLXZ6EWSVJ3DY7J6JVRMUKPNYDS2VGODLCLE4V37",
     "title": "Bitcoin surpasses $150,000 before July 2026?",
     "description": "Will Bitcoin's price exceed $150,000 USD on any major exchange before July 1st, 2026?",
     "category": "Crypto",
     "emoji": "₿",
     "endDate": "2026-07-01",
-    "yesPrice": 0.616613815563354,
-    "noPrice": 0.38338618443664596,
-    "yesVolume": 81077,
-    "noVolume": 49510,
-    "volume": 131106,
+    "yesPrice": 0.6236350365985931,
+    "noPrice": 0.3763649634014069,
+    "yesVolume": 81676,
+    "noVolume": 49610,
+    "volume": 131286,
     "liquidity": 45200,
     "resolved": false,
-    "createdAt": "2026-03-28T10:55:08.587Z"
+    "createdAt": "2026-03-28T10:55:08.587Z",
+    "trades": [
+      {
+        "user": "GCATAASNFHODIKA4VTIEZHONZB3BGZJL42FXHHZ3VS6YKX2PCDIJ3LDY",
+        "type": "YES",
+        "amount": 99,
+        "price": 0.622,
+        "timestamp": 1774979559428,
+        "transactionHash": "035C05E52F6A5B946C5D9F2035F048A7DCF9614FD9DEB421BA4A02869FFAE303"
+      }
+    ]
   },
   {
     "id": "2",
-    "contractAddress": "CDCZYILWPDOZMFE3YK2SY6ES6NBN53GXVOFTDH2GSOQ7DKLQ5FNJCN3L",
+    "contractAddress": "CB5ZKRVTZCSERHLYMLXZ6EWSVJ3DY7J6JVRMUKPNYDS2VGODLCLE4V37",
     "title": "Ethereum ETF approved by SEC in 2026?",
     "description": "Will the U.S. Securities and Exchange Commission approve a spot Ethereum ETF in 2026?",
     "category": "Crypto",
     "emoji": "Ξ",
     "endDate": "2026-12-31",
-    "yesPrice": 0.7351358661771693,
-    "noPrice": 0.2648641338228307,
-    "yesVolume": 66104,
+    "yesPrice": 0.7351522744921937,
+    "noPrice": 0.26484772550780633,
+    "yesVolume": 66113,
     "noVolume": 23329,
-    "volume": 89433,
+    "volume": 89442,
     "liquidity": 31000,
     "resolved": false,
-    "createdAt": "2026-03-28T10:55:08.589Z"
+    "createdAt": "2026-03-28T10:55:08.589Z",
+    "trades": [
+      {
+        "user": "GCATAASNFHODIKA4VTIEZHONZB3BGZJL42FXHHZ3VS6YKX2PCDIJ3LDY",
+        "type": "YES",
+        "amount": 9,
+        "price": 0.735,
+        "timestamp": 1774978628374,
+        "transactionHash": "BD3ECD14EEA3594C6DBDCA82911C8314BB0FE6DD8FD5E7B84DC4C5E1820C01FD"
+      }
+    ]
   },
   {
     "id": "3",
-    "contractAddress": "CDCZYILWPDOZMFE3YK2SY6ES6NBN53GXVOFTDH2GSOQ7DKLQ5FNJCN3L",
+    "contractAddress": "CB5ZKRVTZCSERHLYMLXZ6EWSVJ3DY7J6JVRMUKPNYDS2VGODLCLE4V37",
     "title": "India wins 2026 FIFA World Cup?",
     "description": "Will the Indian national football team win the 2026 FIFA World Cup?",
     "category": "Sports",
     "emoji": "⚽",
     "endDate": "2026-07-19",
-    "yesPrice": 0.06402102296530449,
-    "noPrice": 0.9359789770346956,
-    "yesVolume": 9600,
+    "yesPrice": 0.0863399796964073,
+    "noPrice": 0.9136600203035927,
+    "yesVolume": 10599,
     "noVolume": 206400,
-    "volume": 216000,
+    "volume": 216999,
     "liquidity": 88000,
     "resolved": false,
-    "createdAt": "2026-03-28T10:55:08.589Z"
+    "createdAt": "2026-03-28T10:55:08.589Z",
+    "trades": [
+      {
+        "user": "GCATAASNFHODIKA4VTIEZHONZB3BGZJL42FXHHZ3VS6YKX2PCDIJ3LDY",
+        "type": "YES",
+        "amount": 999,
+        "price": 0.064,
+        "timestamp": 1774978653533,
+        "transactionHash": "8CA70F4D6708112CEEF7A4D513A8CF6ADAD880A317BFF8E2CE205DC7D57FCE9C"
+      }
+    ]
   },
   {
     "id": "4",
-    "contractAddress": "CDCZYILWPDOZMFE3YK2SY6ES6NBN53GXVOFTDH2GSOQ7DKLQ5FNJCN3L",
+    "contractAddress": "CB5ZKRVTZCSERHLYMLXZ6EWSVJ3DY7J6JVRMUKPNYDS2VGOPNYDS2VGODLCLE4V37",
     "title": "Global temperature record broken in 2026?",
     "description": "Will 2026 set a new global average surface temperature record, surpassing 2024?",
     "category": "Climate",
@@ -65,11 +95,12 @@
     "volume": 44200,
     "liquidity": 18500,
     "resolved": false,
-    "createdAt": "2026-03-28T10:55:08.589Z"
+    "createdAt": "2026-03-28T10:55:08.589Z",
+    "trades": []
   },
   {
     "id": "5",
-    "contractAddress": "CDCZYILWPDOZMFE3YK2SY6ES6NBN53GXVOFTDH2GSOQ7DKLQ5FNJCN3L",
+    "contractAddress": "CB5ZKRVTZCSERHLYMLXZ6EWSVJ3DY7J6JVRMUKPNYDS2VGODLCLE4V37",
     "title": "Stellar XLM reaches $1 before 2027?",
     "description": "Will the price of Stellar Lumens (XLM) surpass $1.00 USD before January 1st, 2027?",
     "category": "Crypto",
@@ -82,23 +113,25 @@
     "volume": 67800,
     "liquidity": 22000,
     "resolved": false,
-    "createdAt": "2026-03-28T10:55:08.589Z"
+    "createdAt": "2026-03-28T10:55:08.589Z",
+    "trades": []
   },
   {
-    "contractAddress": "CDCZYILWPDOZMFE3YK2SY6ES6NBN53GXVOFTDH2GSOQ7DKLQ5FNJCN3L",
+    "id": "1774695986236",
+    "contractAddress": "CB5ZKRVTZCSERHLYMLXZ6EWSVJ3DY7J6JVRMUKPNYDS2VGODLCLE4V37",
     "title": "Who has more sixes in IPL?",
-    "description": "",
+    "description": "IPL Prediction Market",
     "category": "Sports",
-    "emoji": "⚽",
+    "emoji": "🏏",
     "endDate": "2026-03-30",
-    "yesPrice": 0,
-    "noPrice": 1,
+    "yesPrice": 0.5,
+    "noPrice": 0.5,
     "yesVolume": 109,
     "noVolume": 90,
     "volume": 249,
     "liquidity": 0,
     "resolved": false,
-    "id": "1774695986236",
-    "createdAt": "2026-03-28T11:06:26.236Z"
+    "createdAt": "2026-03-28T11:06:26.236Z",
+    "trades": []
   }
 ]

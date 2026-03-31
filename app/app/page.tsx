@@ -41,14 +41,14 @@ function MarketCard({ market }: { market: MarketMeta }) {
           
           {/* Badge */}
           <div className="absolute top-4 left-4 flex gap-2">
-            <span className="px-2.5 py-1 rounded-lg bg-indigo-500/20 backdrop-blur-md border border-indigo-500/30 text-[10px] font-black text-indigo-400 uppercase tracking-widest shadow-2xl">
+            <span className="px-2.5 py-1 rounded-lg bg-indigo-600/40 border border-indigo-500/30 text-[10px] font-black text-indigo-100 uppercase tracking-widest shadow-2xl">
               {market.category}
             </span>
           </div>
           
           <div className="absolute top-4 right-4">
-             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 shadow-2xl">
-               <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">⚡ Gasless</span>
+             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-600/40 border border-emerald-500/30 shadow-2xl">
+               <span className="text-[10px] font-black text-emerald-100 uppercase tracking-widest">⚡ Gasless</span>
              </div>
           </div>
         </div>
@@ -270,36 +270,6 @@ export default function HomePage() {
 
       {showWalletModal && <WalletModal onClose={() => setShowWalletModal(false)} />}
       
-      <style jsx global>{`
-        .gradient-text-premium {
-          background: linear-gradient(135deg, #fff 0%, #a5b4fc 50%, #6366f1 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-        }
-        .glass-card {
-          background: rgba(15, 23, 42, 0.4);
-          backdrop-filter: blur(20px);
-          border-radius: 32px;
-        }
-        .glass-light {
-          background: rgba(255, 255, 255, 0.03);
-          backdrop-filter: blur(10px);
-        }
-        .glass-dark {
-          background: rgba(2, 6, 23, 0.8);
-          backdrop-filter: blur(10px);
-        }
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-          animation: fade-in 1s ease-out forwards;
-        }
-        .no-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
     </div>
   );
 }

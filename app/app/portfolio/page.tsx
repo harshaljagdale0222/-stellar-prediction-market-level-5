@@ -253,21 +253,6 @@ export default function PortfolioPage() {
 
       {showWalletModal && <WalletModal onClose={() => setShowWalletModal(false)} />}
 
-      <style jsx global>{`
-        .glass-card {
-          background: rgba(15, 23, 42, 0.4);
-          backdrop-filter: blur(20px);
-          border-radius: 32px;
-        }
-        .glass-light {
-          background: rgba(255, 255, 255, 0.03);
-          backdrop-filter: blur(10px);
-        }
-        .glass-dark {
-          background: rgba(2, 6, 23, 0.8);
-          backdrop-filter: blur(10px);
-        }
-      `}</style>
     </div>
   );
 }

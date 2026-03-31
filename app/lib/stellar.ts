@@ -184,6 +184,7 @@ export function formatProbability(p: number): string {
 
 // Calls the Prediction Market smart contract on the Stellar Testnet
 export async function submitTrade(params: {
+  marketId: string;
   contractAddress: string;
   action: "buy_yes" | "buy_no" | "sell_yes" | "add_liquidity";
   amount: number;
@@ -255,17 +256,33 @@ export async function submitTrade(params: {
 
     if (!signedXdr) throw new Error("Transaction was not signed.");
 
-    // 5. Submit
-    const signedTx = TransactionBuilder.fromXDR(signedXdr, Networks.TESTNET) as Transaction;
-    const submitResponse = await server.submitTransaction(signedTx);
+    // 5. Submit via Sponsor (Gasless)
+    console.log("Submitting via Sponsor API for gasless experience...");
+    const sponsorRes = await fetch("/api/sponsor", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        xdr: signedXdr,
+        userAddress: params.walletAddress,
+        marketId: params.marketId,
+        amount: params.amount,
+        action: params.action
+      })
+    });
+
+    const sponsorData = await sponsorRes.json();
+    if (!sponsorRes.ok) {
+      throw new Error(sponsorData.error || "Sponsorship failed");
+    }
     
-    let message = "Transaction successful!";
-    if (params.action === "buy_yes") message = "Successfully bought YES tokens! 🚀";
-    if (params.action === "buy_no") message = "Successfully bought NO tokens! 🚀";
+    let message = "Transaction successful! (Gasless) ⚡";
+    if (params.action === "buy_yes") message = "Successfully bought YES tokens! (Gasless) 🚀";
+    if (params.action === "buy_no") message = "Successfully bought NO tokens! (Gasless) 🚀";
     
-    return { txHash: submitResponse.hash, message };
+    return { txHash: sponsorData.hash, message };
   } catch (error: any) {
     console.error("Trade Error:", error);
     throw new Error(error.message || "Wallet transaction failed.");
   }
 }
+

@@ -60,50 +60,7 @@ function Toast({
   );
 }
 
-// ── Navbar ─────────────────────────────────────────────────────────────────────
-function Navbar({
-  address,
-  onOpenModal,
-}: {
-  address: string | null;
-  onOpenModal: () => void;
-}) {
-  return (
-    <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-cyan-400 flex items-center justify-center text-sm font-bold">
-            ⭐
-          </div>
-          <span className="font-bold text-lg tracking-tight gradient-text">
-            StellarPredict
-          </span>
-        </Link>
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 text-xs text-slate-500">
-            <div className="pulse-dot" />
-            <span>Testnet</span>
-          </div>
-          {address ? (
-            <button
-              onClick={onOpenModal}
-              className="glass px-3 py-1.5 rounded-full text-sm text-violet-300 font-mono border border-violet-500/30 hover:border-violet-400/60 transition-all"
-            >
-              {shortenAddress(address)}
-            </button>
-          ) : (
-            <button
-              onClick={onOpenModal}
-              className="px-4 py-1.5 rounded-full bg-gradient-to-r from-violet-600 to-cyan-600 text-white text-sm font-semibold hover:opacity-90 transition-opacity"
-            >
-              Connect Wallet
-            </button>
-          )}
-        </div>
-      </div>
-    </nav>
-  );
-}
+import Navbar from "@/app/components/Navbar";
 
 // ── Trading Panel ──────────────────────────────────────────────────────────────
 function TradingPanel({
@@ -180,6 +137,7 @@ function TradingPanel({
     try {
       const actionRef = tab as "buy_yes" | "buy_no" | "sell_yes" | "add_liquidity";
       const { txHash, message } = await submitTrade({
+        marketId: market.id,
         contractAddress: market.contractAddress,
         action: actionRef,
         amount: parsedAmount,

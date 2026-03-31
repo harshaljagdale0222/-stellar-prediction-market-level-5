@@ -1,213 +1,109 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { MarketMeta } from "@/lib/db";
+import Image from "next/image";
+import { MarketMeta, UserMetrics } from "@/lib/db";
 import { formatCurrency, shortenAddress } from "@/lib/stellar";
 import WalletModal from "@/app/components/WalletModal";
+import Navbar from "@/app/components/Navbar";
+import LiveStatsHeader from "@/app/components/LiveStatsHeader";
 import { useWallet } from "@/app/context/WalletContext";
 
 // ──────────────────────────────────────────────────────────────────────────────
-// Toast Notification
-// ──────────────────────────────────────────────────────────────────────────────
-
-
-// ──────────────────────────────────────────────────────────────────────────────
-// Navbar
-// ──────────────────────────────────────────────────────────────────────────────
-function Navbar({ address, onOpenModal }: { address: string | null; onOpenModal: () => void }) {
-  return (
-    <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/5">
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-cyan-400 flex items-center justify-center text-sm font-bold">
-            ⭐
-          </div>
-          <span className="font-bold text-lg tracking-tight gradient-text">StellarPredict</span>
-        </Link>
-
-        <div className="hidden md:flex items-center gap-6 text-sm text-slate-400">
-          <Link href="/" className="hover:text-white transition-colors">Markets</Link>
-          <Link href="/create" className="hover:text-white transition-colors">Create Market</Link>
-          <a href="#" className="hover:text-white transition-colors">Portfolio</a>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 text-xs text-slate-500">
-            <div className="pulse-dot" />
-            <span>Testnet</span>
-          </div>
-          {address ? (
-            <div className="glass px-3 py-1.5 rounded-full text-sm text-violet-300 font-mono border border-violet-500/30">
-              {shortenAddress(address)}
-            </div>
-          ) : (
-            <button
-              onClick={onOpenModal}
-              className="px-4 py-1.5 rounded-full bg-gradient-to-r from-violet-600 to-cyan-600 text-white text-sm font-semibold hover:opacity-90 transition-opacity"
-            >
-              Connect Wallet
-            </button>
-          )}
-        </div>
-      </div>
-    </nav>
-  );
-}
-
-// ──────────────────────────────────────────────────────────────────────────────
-// Stats Bar
-// ──────────────────────────────────────────────────────────────────────────────
-function StatsBar({ stats }: { stats: any }) {
-  const items = [
-    { label: "Total Markets", value: stats?.totalMarkets ?? "—" },
-    { label: "Active", value: stats?.activeMarkets ?? "—" },
-    { label: "Total Volume", value: stats ? formatCurrency(stats.totalVolume) : "—" },
-    { label: "Total Liquidity", value: stats ? formatCurrency(stats.totalLiquidity) : "—" },
-  ];
-  return (
-    <div className="glass border-b border-white/5 sticky top-16 z-40">
-      <div className="max-w-7xl mx-auto px-6 h-12 flex items-center gap-8 overflow-x-auto text-sm">
-        {items.map((item) => (
-          <div key={item.label} className="flex items-center gap-2 shrink-0">
-            <span className="text-slate-500">{item.label}:</span>
-            <span className="text-white font-semibold">{item.value}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
 // Market Card
 // ──────────────────────────────────────────────────────────────────────────────
 function MarketCard({ market }: { market: MarketMeta }) {
   const yesPercent = Math.round(market.yesPrice * 100);
   const noPercent = 100 - yesPercent;
-  const daysLeft = Math.max(
-    0,
-    Math.ceil((new Date(market.endDate).getTime() - Date.now()) / 86400000)
-  );
 
-  const categoryColors: Record<string, string> = {
-    Crypto: "text-cyan-400 bg-cyan-400/10 border-cyan-400/20",
-    Sports: "text-green-400 bg-green-400/10 border-green-400/20",
-    Climate: "text-amber-400 bg-amber-400/10 border-amber-400/20",
-    Politics: "text-rose-400 bg-rose-400/10 border-rose-400/20",
-    Other: "text-slate-400 bg-slate-400/10 border-slate-400/20",
+  // AI Image Map
+  const imageMap: Record<string, string> = {
+    "Crypto": "/assets/images/crypto.png",
+    "Sports": "/assets/images/sports.png",
+    "Climate": "/assets/images/climate.png"
   };
-  const catStyle = categoryColors[market.category] ?? categoryColors.Other;
+
+  const bannerImg = imageMap[market.category] || "/assets/images/crypto.png";
 
   return (
     <Link href={`/markets/${market.id}`}>
-      <div className="glass rounded-2xl p-5 hover:border-violet-500/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-violet-500/10 group cursor-pointer h-full flex flex-col">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-3 mb-4">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-600/20 to-cyan-600/20 border border-white/10 flex items-center justify-center text-2xl shrink-0">
-            {market.emoji}
-          </div>
-          <div className="flex items-center gap-2">
-            <span className={`text-xs px-2 py-0.5 rounded-full border font-medium ${catStyle}`}>
+      <div className="group relative glass-card border border-white/5 hover:border-indigo-500/40 transition-all duration-500 hover:-translate-y-2 overflow-hidden flex flex-col h-full">
+        {/* Banner Image */}
+        <div className="relative w-full h-36 overflow-hidden flex-shrink-0">
+          <Image 
+            src={bannerImg} 
+            alt={market.title} 
+            fill 
+            className="object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500 scale-105 group-hover:scale-100"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/40 to-transparent" />
+          
+          {/* Badge */}
+          <div className="absolute top-4 left-4 flex gap-2">
+            <span className="px-2.5 py-1 rounded-lg bg-indigo-500/20 backdrop-blur-md border border-indigo-500/30 text-[10px] font-black text-indigo-400 uppercase tracking-widest shadow-2xl">
               {market.category}
             </span>
-            {!market.resolved && (
-              <span className="text-xs text-slate-500">{daysLeft}d left</span>
-            )}
-            {market.resolved && (
-              <span className="text-xs text-violet-400 bg-violet-400/10 px-2 py-0.5 rounded-full border border-violet-400/20 font-medium">
-                Resolved: {market.outcome}
-              </span>
-            )}
+          </div>
+          
+          <div className="absolute top-4 right-4">
+             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 shadow-2xl">
+               <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">⚡ Gasless</span>
+             </div>
           </div>
         </div>
 
-        {/* Title */}
-        <h3 className="text-sm font-semibold text-slate-100 leading-snug mb-4 flex-1 group-hover:text-white transition-colors">
-          {market.title}
-        </h3>
+        <div className="p-6 pt-2 flex flex-col flex-1">
+          <div className="flex justify-between items-start mb-4">
+            <span className="text-3xl filter drop-shadow-lg">{market.emoji}</span>
+          </div>
 
-        {/* Probability Bar */}
-        <div className="mb-4">
-          <div className="flex justify-between text-xs mb-1.5">
-            <span className="text-cyan-400 font-bold">{yesPercent}% YES</span>
-            <span className="text-pink-400 font-bold">{noPercent}% NO</span>
-          </div>
-          <div className="h-2 rounded-full bg-white/5 overflow-hidden">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-cyan-400 to-cyan-600 transition-all duration-700"
-              style={{ width: `${yesPercent}%` }}
-            />
-          </div>
-        </div>
+          {/* Title */}
+          <h3 className="text-xl font-bold text-slate-100 mb-6 group-hover:text-white transition-colors line-clamp-2 min-h-[3.5rem] leading-tight">
+            {market.title}
+          </h3>
 
-        {/* Footer */}
-        <div className="pt-3 border-t border-white/5 space-y-3">
-          <div className="flex justify-between items-center text-[10px] uppercase tracking-wider font-extrabold text-slate-500">
-            <span>Sentiment Support</span>
-            <span className="text-slate-400">{formatCurrency(market.yesVolume + market.noVolume)}</span>
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <div className="glass rounded-lg py-1 px-2 border border-cyan-500/10">
-              <p className="text-[10px] text-cyan-400 font-bold mb-0.5">YES Support</p>
-              <p className="text-xs text-white font-mono font-bold">{formatCurrency(market.yesVolume)}</p>
-            </div>
-            <div className="glass rounded-lg py-1 px-2 border-pink-500/10 border">
-              <p className="text-[10px] text-pink-400 font-bold mb-0.5">NO Support</p>
-              <p className="text-xs text-white font-mono font-bold">{formatCurrency(market.noVolume)}</p>
+          {/* Prediction visualization */}
+          <div className="space-y-4 mb-8 mt-auto">
+            <div className="flex justify-between items-end">
+              <div className="text-left">
+                <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1.5">Yes</p>
+                <p className="text-2xl font-black text-cyan-400 leading-none">{yesPercent}%</p>
+              </div>
+              
+              <div className="flex-1 px-4 self-center">
+                 <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden shadow-inner">
+                    <div 
+                      className="h-full bg-gradient-to-r from-cyan-500 to-indigo-500 transition-all duration-1000 shadow-[0_0_10px_rgba(34,211,238,0.5)]"
+                      style={{ width: `${yesPercent}%` }}
+                    />
+                 </div>
+              </div>
+
+              <div className="text-right">
+                <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1.5">No</p>
+                <p className="text-2xl font-black text-rose-500 leading-none">{noPercent}%</p>
+              </div>
             </div>
           </div>
-          <div className="flex justify-between text-[10px] text-slate-500">
-            <span>Vol: <span className="text-slate-300">{formatCurrency(market.volume)}</span></span>
-            <span>Liq: <span className="text-slate-300">{formatCurrency(market.liquidity)}</span></span>
+
+          {/* Stats Footer */}
+          <div className="flex justify-between pt-5 border-t border-white/5 mt-auto">
+            <div className="flex flex-col">
+              <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Volume</span>
+              <span className="text-sm font-mono font-bold text-slate-200 mt-1">{formatCurrency(market.volume)}</span>
+            </div>
+            <div className="flex flex-col text-right">
+              <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Liquidity</span>
+              <span className="text-sm font-mono font-bold text-slate-200 mt-1">{formatCurrency(market.liquidity)}</span>
+            </div>
           </div>
         </div>
+
+        {/* Hover Action Glow */}
+        <div className="absolute inset-0 bg-indigo-600/0 group-hover:bg-indigo-600/[0.03] transition-all duration-500 pointer-events-none" />
       </div>
     </Link>
-  );
-}
-
-// ──────────────────────────────────────────────────────────────────────────────
-// Hero
-// ──────────────────────────────────────────────────────────────────────────────
-function Hero() {
-  return (
-    <div className="relative text-center py-24 px-4 overflow-hidden">
-      {/* Background orbs */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-10 left-1/4 w-96 h-96 bg-violet-600/10 rounded-full blur-3xl" />
-        <div className="absolute top-20 right-1/4 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl" />
-      </div>
-
-      <div className="relative z-10">
-        <div className="inline-flex items-center gap-2 glass px-4 py-1.5 rounded-full text-sm text-violet-300 mb-6 border border-violet-500/20">
-          <span className="pulse-dot !w-2 !h-2" />
-          Powered by Stellar Soroban
-        </div>
-        <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight mb-4">
-          <span className="gradient-text">Predict the Future.</span>
-          <br />
-          <span className="text-white">Earn Real Rewards.</span>
-        </h1>
-        <p className="text-lg text-slate-400 max-w-xl mx-auto mb-8">
-          Trade on real-world events using a fully decentralized AMM on Stellar. No middlemen — just math and markets.
-        </p>
-        <div className="flex items-center justify-center gap-4">
-          <Link
-            href="#markets"
-            className="px-6 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-cyan-600 text-white font-semibold hover:opacity-90 transition-opacity shadow-lg shadow-violet-500/25"
-          >
-            Explore Markets
-          </Link>
-          <Link
-            href="/create"
-            className="px-6 py-3 rounded-xl glass border border-white/10 text-slate-200 font-semibold hover:border-violet-400/40 transition-all"
-          >
-            Create Market
-          </Link>
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -216,70 +112,194 @@ function Hero() {
 // ──────────────────────────────────────────────────────────────────────────────
 export default function HomePage() {
   const [markets, setMarkets] = useState<MarketMeta[]>([]);
-  const [stats, setStats] = useState<any>(null);
-  const { address, disconnect } = useWallet();
+  const [metrics, setMetrics] = useState<UserMetrics | null>(null);
+  const { address } = useWallet();
   const [filter, setFilter] = useState("All");
   const [loading, setLoading] = useState(true);
   const [showWalletModal, setShowWalletModal] = useState(false);
 
   useEffect(() => {
-    Promise.all([
-      fetch("/api/markets").then((r) => r.json()),
-      fetch("/api/stats").then((r) => r.json()),
-    ]).then(([mData, sData]) => {
-      setMarkets(mData.markets ?? []);
-      setStats(sData.stats);
-      setLoading(false);
-    });
+    async function fetchData() {
+      try {
+        const [mRes, sRes] = await Promise.all([
+          fetch("/api/markets"),
+          fetch("/api/stats")
+        ]);
+        const mData = await mRes.json();
+        const sData = await sRes.json();
+        setMarkets(mData.markets || []);
+        setMetrics(sData.stats || null);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
   }, []);
 
   const categories = ["All", ...Array.from(new Set(markets.map((m) => m.category)))];
   const filtered = filter === "All" ? markets : markets.filter((m) => m.category === filter);
 
   return (
-    <div className="min-h-screen grid-bg">
+    <div className="min-h-screen bg-[#020617] text-white selection:bg-indigo-500/30 scroll-smooth">
       <Navbar address={address} onOpenModal={() => setShowWalletModal(true)} />
-      <StatsBar stats={stats} />
-      {showWalletModal && (
-        <WalletModal
-          onClose={() => setShowWalletModal(false)}
-        />
-      )}
+      
+      {/* Spacer for fixed navbar */}
+      <div className="h-16" />
+      <LiveStatsHeader metrics={metrics} />
 
-      <main className="max-w-7xl mx-auto px-6">
-        <Hero />
+      <main className="max-w-7xl mx-auto px-6 pb-24">
+        {/* Hero Section */}
+        <section className="relative py-28 md:py-36 text-center overflow-hidden">
+          {/* Advanced background elements */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-indigo-600/10 rounded-full blur-[140px] pointer-events-none opacity-50" />
+          <div className="absolute top-0 left-1/4 w-[300px] h-[300px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none" />
+          
+          <div className="relative z-10 space-y-10">
+            <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-2xl glass-light border border-white/10 text-[10px] font-black text-indigo-300 uppercase tracking-[0.2em] animate-fade-in shadow-2xl">
+              <span className="w-2.5 h-2.5 rounded-full bg-indigo-500 shadow-[0_0_12px_rgba(99,102,241,0.9)] animate-pulse" />
+              Revolutionizing Prediction Markets
+            </div>
+            
+            <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.95] max-w-5xl mx-auto">
+              Predict. Trade. <br />
+              <span className="gradient-text-premium pb-2">Master the Future.</span>
+            </h1>
+            
+            <p className="text-xl md:text-2xl text-slate-400 max-w-2xl mx-auto font-medium leading-relaxed">
+              Exchange insights for rewards with <span className="text-indigo-400 font-bold">Zero Gas Fees</span>. 
+              Built on Stellar, the fastest blockchain for fintech.
+            </p>
 
-        {/* Filter Pills */}
-        <div id="markets" className="flex items-center gap-2 mb-6 flex-wrap">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setFilter(cat)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-all ${filter === cat
-                ? "bg-violet-600 border-violet-500 text-white"
-                : "glass border-white/10 text-slate-400 hover:border-violet-400/30 hover:text-slate-200"
-                }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-
-        {/* Markets Grid */}
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="glass rounded-2xl h-64 animate-pulse" />
-            ))}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6">
+              <button 
+                onClick={() => document.getElementById("markets")?.scrollIntoView({ behavior: "smooth" })}
+                className="w-full sm:w-auto px-12 py-5 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 text-white font-black text-xl shadow-2xl shadow-indigo-600/40 hover:scale-105 active:scale-95 hover:rotate-1 transition-all"
+              >
+                Trade Markets
+              </button>
+              <Link 
+                href="/portfolio"
+                className="w-full sm:w-auto px-12 py-5 rounded-2xl glass-dark border border-white/10 text-white font-black text-xl hover:bg-white/10 hover:border-indigo-500/40 transition-all shadow-xl"
+              >
+                My Portfolio
+              </Link>
+            </div>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 pb-16">
-            {filtered.map((m) => (
-              <MarketCard key={m.id} market={m} />
-            ))}
+        </section>
+
+        {/* Markets Header & Filter */}
+        <section id="markets" className="mt-16 mb-12 pt-16 border-t border-white/5">
+          <div className="flex flex-col lg:flex-row justify-between items-end gap-10 mb-16 px-2">
+            <div className="space-y-2">
+               <div className="flex items-center gap-3">
+                  <h2 className="text-4xl font-black text-white tracking-tight">Active Markets</h2>
+                  <span className="px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-[10px] font-black text-indigo-400 uppercase tracking-widest">{filtered.length} Live</span>
+               </div>
+              <p className="text-slate-500 font-medium text-lg">Stake your XLM on outcomes you believe in.</p>
+            </div>
+            
+            <div className="flex items-center gap-3 bg-slate-900/40 p-2 rounded-2xl border border-white/5 overflow-x-auto no-scrollbar scroll-smooth">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setFilter(cat)}
+                  className={`px-7 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all whitespace-nowrap shadow-sm ${
+                    filter === cat
+                      ? "bg-gradient-to-r from-indigo-600 to-indigo-500 text-white shadow-xl shadow-indigo-600/30"
+                      : "text-slate-500 hover:text-slate-300 hover:bg-white/5"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
           </div>
-        )}
+
+          {/* Grid */}
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="h-[480px] rounded-[32px] bg-indigo-900/10 animate-pulse border border-white/5" />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+              {filtered.map((m) => (
+                <MarketCard key={m.id} market={m} />
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* Scalability Showcase */}
+        <section className="mt-40 mb-20">
+           <div className="glass-card p-12 border border-white/5 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-indigo-600/10 rounded-full blur-[100px] -mr-40 -mt-40 transition-all duration-700 group-hover:bg-indigo-600/20" />
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
+                 <div className="space-y-8">
+                    <h3 className="text-4xl md:text-5xl font-black leading-tight">Scale your trading with <br/><span className="text-indigo-400">Gasless Infrastructure.</span></h3>
+                    <p className="text-lg text-slate-400 leading-relaxed">We use innovative fee sponsorship to ensure that your trading experience is friction-less. No more keeping dust XLM for network fees — focus on what matters: the prediction.</p>
+                    <div className="flex gap-8">
+                       <div className="space-y-2">
+                          <p className="text-3xl font-black text-white">0.0s</p>
+                          <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Network Fees</p>
+                       </div>
+                       <div className="space-y-2">
+                          <p className="text-3xl font-black text-white">5.2s</p>
+                          <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Block Time</p>
+                       </div>
+                       <div className="space-y-2">
+                          <p className="text-3xl font-black text-white">100%</p>
+                          <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Transparent</p>
+                       </div>
+                    </div>
+                 </div>
+                 <div className="relative h-80 rounded-3xl overflow-hidden border border-white/10 shadow-3xl bg-slate-900/50 flex items-center justify-center">
+                    <div className="text-center space-y-4">
+                       <div className="text-6xl animate-bounce">🚀</div>
+                       <p className="text-sm font-black text-indigo-300 uppercase tracking-[0.3em]">Scalable Protocol</p>
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </section>
       </main>
+
+      {showWalletModal && <WalletModal onClose={() => setShowWalletModal(false)} />}
+      
+      <style jsx global>{`
+        .gradient-text-premium {
+          background: linear-gradient(135deg, #fff 0%, #a5b4fc 50%, #6366f1 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+        .glass-card {
+          background: rgba(15, 23, 42, 0.4);
+          backdrop-filter: blur(20px);
+          border-radius: 32px;
+        }
+        .glass-light {
+          background: rgba(255, 255, 255, 0.03);
+          backdrop-filter: blur(10px);
+        }
+        .glass-dark {
+          background: rgba(2, 6, 23, 0.8);
+          backdrop-filter: blur(10px);
+        }
+        @keyframes fade-in {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+          animation: fade-in 1s ease-out forwards;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
     </div>
   );
 }

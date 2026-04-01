@@ -127,7 +127,38 @@ export default function HomePage() {
         ]);
         const mData = await mRes.json();
         const sData = await sRes.json();
-        setMarkets(mData.markets || []);
+        
+        let initialMarkets: MarketMeta[] = mData.markets || [];
+        
+        // Get overrides from localStorage
+        let savedOverrides: Record<string, any> = {};
+        try {
+          const stored = localStorage.getItem("market_overrides");
+          if (stored) {
+            savedOverrides = JSON.parse(stored);
+          }
+        } catch (e) {
+          console.error("Error reading overrides", e);
+        }
+
+        // Apply overrides with higher priority
+        const finalMarkets = initialMarkets.map(m => {
+          const override = savedOverrides[m.id];
+          if (override) {
+            console.log("Applying home override for:", m.id);
+            return {
+              ...m,
+              yesPrice: override.yesPrice,
+              noPrice: override.noPrice,
+              volume: override.volume,
+              yesVolume: override.yesVolume,
+              noVolume: override.noVolume,
+            };
+          }
+          return m;
+        });
+
+        setMarkets(finalMarkets);
         setMetrics(sData.stats || null);
       } catch (err) {
         console.error(err);

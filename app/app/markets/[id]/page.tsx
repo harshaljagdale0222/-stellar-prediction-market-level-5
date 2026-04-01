@@ -177,6 +177,15 @@ function TradingPanel({
       // Instantly update UI prop
       onTradeSuccess(patchData);
 
+      // Session Persistence for Market Stats (Vercel Fix)
+      try {
+        const overrides = JSON.parse(localStorage.getItem("market_overrides") || "{}");
+        overrides[market.id] = { ...patchData };
+        localStorage.setItem("market_overrides", JSON.stringify(overrides));
+      } catch (e) {
+        console.error("Local storage error (Market):", e);
+      }
+
       // Session Persistence for Portfolio (Vercel Fix)
       const sessionTrade = {
         type: actionRef.includes("yes") ? "YES" : "NO",
@@ -398,23 +407,33 @@ export default function MarketPage() {
   }, []);
 
   useEffect(() => {
-    fetch(`/api/markets/${id}`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (d?.market) {
-          // Merge with local overrides for persistence on Vercel
-          const overrides = JSON.parse(localStorage.getItem("market_overrides") || "{}");
-          const myOverride = overrides[id];
-          if (myOverride) {
-            setMarket({ ...d.market, ...myOverride });
-          } else {
-            setMarket(d.market);
+    const loadMarket = async () => {
+      try {
+        const response = await fetch(`/api/markets/${id}`);
+        const data = await response.json();
+        
+        if (data?.market) {
+          // Check for manual overrides FIRST
+          const storedOverrides = localStorage.getItem("market_overrides");
+          if (storedOverrides) {
+            const parsed = JSON.parse(storedOverrides);
+            if (parsed[id]) {
+              console.log("Applying local override for market:", id);
+              setMarket({ ...data.market, ...parsed[id] });
+              setLoading(false);
+              return;
+            }
           }
-        } else {
-          setMarket(null);
+          setMarket(data.market);
         }
+      } catch (err) {
+        console.error("Fetch error:", err);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+    
+    loadMarket();
   }, [id]);
 
   if (loading) {

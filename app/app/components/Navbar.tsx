@@ -12,11 +12,25 @@ export default function Navbar({ address, onOpenModal }: NavbarProps) {
   return (
     <nav className="fixed top-0 left-0 right-0 z-[60] glass-dark border-b border-white/5">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center text-sm font-bold shadow-lg shadow-indigo-500/20 text-white">
-            ⭐
+        <Link href="/" className="flex items-center gap-2 group transition-all active:scale-95">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 via-blue-500 to-cyan-400 p-[1.5px] shadow-lg shadow-indigo-500/20 group-hover:shadow-indigo-500/40 transition-all duration-300">
+            <div className="w-full h-full rounded-[10px] bg-[#020617] flex items-center justify-center overflow-hidden">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" 
+                      fill="url(#icon-grad)" stroke="url(#icon-grad)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
+                <defs>
+                  <linearGradient id="icon-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="#6366f1"/>
+                    <stop offset="1" stopColor="#22d3ee"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
           </div>
-          <span className="font-bold text-xl tracking-tighter gradient-text-premium">StellarPredict</span>
+          <div className="flex flex-col -gap-1">
+            <span className="font-black text-xl tracking-tight text-white leading-none uppercase">Stellar<span className="text-indigo-400">Predict</span></span>
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest leading-none">Global Markets</span>
+          </div>
         </Link>
 
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-400">

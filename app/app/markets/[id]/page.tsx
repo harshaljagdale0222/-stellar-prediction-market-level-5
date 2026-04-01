@@ -401,7 +401,18 @@ export default function MarketPage() {
     fetch(`/api/markets/${id}`)
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
-        setMarket(d?.market ?? null);
+        if (d?.market) {
+          // Merge with local overrides for persistence on Vercel
+          const overrides = JSON.parse(localStorage.getItem("market_overrides") || "{}");
+          const myOverride = overrides[id];
+          if (myOverride) {
+            setMarket({ ...d.market, ...myOverride });
+          } else {
+            setMarket(d.market);
+          }
+        } else {
+          setMarket(null);
+        }
         setLoading(false);
       });
   }, [id]);
@@ -679,7 +690,25 @@ export default function MarketPage() {
                 walletType={walletType}
                 onToast={showToast}
                 onOpenWallet={() => setShowWalletModal(true)}
-                onTradeSuccess={(update) => setMarket((m) => (m ? { ...m, ...update } : m))}
+                onTradeSuccess={(update) => {
+                  setMarket((m) => {
+                    if (!m) return m;
+                    const next = { ...m, ...update };
+                    
+                    // Persistence logic for Vercel
+                    const overrides = JSON.parse(localStorage.getItem("market_overrides") || "{}");
+                    overrides[m.id] = {
+                      yesPrice: next.yesPrice,
+                      noPrice: next.noPrice,
+                      volume: next.volume,
+                      yesVolume: next.yesVolume,
+                      noVolume: next.noVolume
+                    };
+                    localStorage.setItem("market_overrides", JSON.stringify(overrides));
+                    
+                    return next;
+                  });
+                }}
               />
             )}
           </div>

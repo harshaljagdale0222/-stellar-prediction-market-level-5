@@ -195,7 +195,7 @@ export async function submitTrade(params: any) {
     }
 
     return { 
-      txHash: txHash.slice(0, 10), 
+      txHash: txHash, 
       message: "Trade executed successfully!" 
     };
   } catch (error: any) {

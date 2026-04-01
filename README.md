@@ -97,7 +97,7 @@ Based on feedback, we completed one iteration and planned the next phase:
 
 ---
 
-## 📂 Project Structure
+### 📂 Project Structure
 
 ```text
 .
@@ -113,12 +113,19 @@ Based on feedback, we completed one iteration and planned the next phase:
 │   ├── market/                 # Prediction Market Core Logic
 │   └── Cargo.toml              # Rust Dependency Configuration
 ├── assets/                     # Project UI Screenshots & Banners
-├── proof1.png                  # Transaction Proof - Summary
-├── proof2.png                  # Transaction Proof - Details
+│   ├── home.png                # Home Dashboard Screenshot
+│   ├── prediction.png          # Trading Interface Screenshot
+│   └── portfolio.png           # User Portfolio & Analytics Screenshot
+├── proof1.png                  # Transaction Proof - Summary (Updated)
+├── proof2.png                  # Transaction Proof - Details (Updated)
 ├── ARCHITECTURE.md             # Detailed System Design
 └── README.md                   # Main Project Documentation
 ```
 
 ---
 
-*Developed for the Stellar Level 5 Milestone.*
+## 📜 License & Author
+*   **Author**: [Harshal Jagdale](https://github.com/harshaljagdale0222)
+*   **Contribution**: Developed for the **Stellar Level 5 Milestone**.
+
+---

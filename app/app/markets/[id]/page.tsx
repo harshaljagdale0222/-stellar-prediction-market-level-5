@@ -177,6 +177,19 @@ function TradingPanel({
       // Instantly update UI prop
       onTradeSuccess(patchData);
 
+      // Session Persistence for Portfolio (Vercel Fix)
+      const sessionTrade = {
+        type: actionRef.includes("yes") ? "YES" : "NO",
+        amount: parsedAmount,
+        price: actionRef.includes("yes") ? market.yesPrice : market.noPrice,
+        timestamp: Date.now(),
+        marketTitle: market.title,
+        marketCategory: market.category,
+        transactionHash: txHash
+      };
+      const existing = JSON.parse(localStorage.getItem("user_trades") || "[]");
+      localStorage.setItem("user_trades", JSON.stringify([sessionTrade, ...existing]));
+
     } catch (e: any) {
       onToast(e.message || "Transaction failed or was rejected.", "warn");
     } finally {

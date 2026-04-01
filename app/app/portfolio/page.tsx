@@ -40,7 +40,16 @@ export default function PortfolioPage() {
         ]);
         const tData = await tRes.json();
         const sData = await sRes.json();
-        setTrades(tData.trades || []);
+        
+        // Merge with local trades (Vercel bypass)
+        const localTrades = JSON.parse(localStorage.getItem("user_trades") || "[]");
+        const mergedTrades = [...(tData.trades || []), ...localTrades]
+          .sort((a, b) => b.timestamp - a.timestamp)
+          .filter((t, i, arr) => 
+            arr.findIndex(x => x.transactionHash === t.transactionHash) === i
+          );
+        
+        setTrades(mergedTrades);
         setMetrics(sData.stats || null);
       } catch (err) {
         console.error("Error fetching portfolio data:", err);

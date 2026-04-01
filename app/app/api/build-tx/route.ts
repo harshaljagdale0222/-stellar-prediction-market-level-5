@@ -6,7 +6,9 @@ export async function POST(req: Request) {
   try {
     const { destination } = await req.json();
     
-    const server = new SDK.SorobanRpc.Server("https://soroban-testnet.stellar.org");
+    // Support both older (SorobanRpc) and newer (rpc) stellar-sdk versions to build the server
+    const DeveloperRPC = SDK.rpc || (SDK as any).SorobanRpc;
+    const server = new DeveloperRPC.Server("https://soroban-testnet.stellar.org");
     const account = await server.getAccount(destination);
     
     // A micro-tx to prove interaction and trigger the real Freighter signing popup

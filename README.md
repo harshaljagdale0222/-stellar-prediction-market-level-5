@@ -42,6 +42,12 @@ Experience seamless connectivity with:
 *   **AMM Simulation**: Fair price discovery based on supply and demand.
 *   **Collateral Management**: Secure Rust-based handling of assets.
 
+### 3. Premium User Dashboard & Analytics
+![StellarPredict Portfolio Dashboard](./assets/portfolio.png)
+*   **Portfolio Tracking**: Real-time monitoring of investments, P&L, and gas savings.
+*   **Share & Earn**: Integrated referral system to grow the ecosystem.
+*   **Security First**: On-chain verification and non-custodial logic for every trade.
+
 ---
 
 ## 🏆 Proof of Blockchain Transactions (Stellar Explorer)

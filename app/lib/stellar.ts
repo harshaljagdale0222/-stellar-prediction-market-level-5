@@ -176,15 +176,14 @@ export async function submitTrade(params: any) {
         // --- REAL SUBMISSION MAGIC ---
         // Dynamically load SDK on client AGAIN to parse the response
         let ClientSDK = await import("@stellar/stellar-sdk");
-        const server = new ClientSDK.rpc.Server("https://soroban-testnet.stellar.org");
+        const server = new ClientSDK.Horizon.Server("https://horizon-testnet.stellar.org");
         const signedTx = ClientSDK.TransactionBuilder.fromXDR(signedXdr, "Test SDF Network ; September 2015");
         
         try {
-           // This will try to push it to the network!
-           // If the account is funded, it will SHOW UP on Stellar Expert!
-           server.sendTransaction(signedTx as any); 
+           // We now AWAIT the real submission to the network!
+           await server.submitTransaction(signedTx as any); 
         } catch (e) {
-           console.warn("Async submission initiated");
+           console.warn("Network submission info:", e);
         }
         
         // Get the real genuine hash from the signed transaction

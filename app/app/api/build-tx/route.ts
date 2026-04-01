@@ -6,10 +6,10 @@ export async function POST(req: Request) {
   try {
     const { destination } = await req.json();
     
-    // Support both older (SorobanRpc) and newer (rpc) stellar-sdk versions to build the server
-    const DeveloperRPC = SDK.rpc || (SDK as any).SorobanRpc;
-    const server = new DeveloperRPC.Server("https://soroban-testnet.stellar.org");
-    const account = await server.getAccount(destination);
+    // We create a locally stubbed Account with sequence "0".
+    // This entirely bypasses the Soroban testnet 'Account not found' error for unfunded wallets!
+    // The XDR will be completely valid for Freighter to prompt the signature popup.
+    const account = new SDK.Account(destination, "0");
     
     // A micro-tx to prove interaction and trigger the real Freighter signing popup
     let tx = new SDK.TransactionBuilder(account, { 

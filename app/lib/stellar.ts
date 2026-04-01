@@ -87,8 +87,9 @@ export async function isFreighterAvailable(): Promise<boolean> {
 export async function getWalletAddress(): Promise<string | null> {
   if (typeof window === "undefined") return null;
   try {
-    const res: any = await getAddress();
-    if (!res) return null;
+    let res: any = await getAddress();
+    if (!res || res.error) res = await requestAccess();
+    if (!res || res.error) return null;
     return typeof res === "string" ? res : (res.address || res.publicKey || null);
   } catch (e) {
     console.error("Error getting address:", e);
@@ -101,12 +102,26 @@ export async function connectWallet(type: WalletType = "freighter"): Promise<str
   
   try {
     if (type === "freighter") {
-      const isAllowedValue = await isAllowed();
-      if (!isAllowedValue) {
+      let allowedRes: any = false;
+      try {
+        allowedRes = await isAllowed();
+      } catch (e) {}
+      
+      const explicitlyAllowed = allowedRes === true || allowedRes?.isAllowed === true;
+
+      if (!explicitlyAllowed) {
         await requestAccess();
       }
-      const res: any = await getAddress();
-      const addr = typeof res === "string" ? res : (res.address || res.publicKey);
+      
+      let res: any = await getAddress();
+      
+      // Fallback if getAddress is weird or undefined
+      if (!res || (!res.address && typeof res !== "string")) {
+        res = await requestAccess();
+      }
+      
+      console.log("RAW FREIGHTER RES:", res);
+      const addr = typeof res === "string" ? res : (res?.address || res?.publicKey || "");
       console.log("FREIGHTER CONNECTED:", addr);
       return addr || null;
     } else if (type === "albedo") {

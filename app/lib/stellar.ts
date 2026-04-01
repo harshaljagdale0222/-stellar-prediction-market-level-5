@@ -61,9 +61,12 @@ export function formatCurrency(n: number): string {
   return `$${n.toFixed(2)}`;
 }
 
-export function shortenAddress(addr: string): string {
+export function shortenAddress(addr: any): string {
   if (!addr) return "";
-  return `${addr.slice(0, 5)}...${addr.slice(-4)}`;
+  // Freighter sometimes returns an object { address: string } or { publicKey: string }
+  const addressString = typeof addr === "string" ? addr : (addr.address || addr.publicKey || addr.pubkey || "");
+  if (typeof addressString !== "string" || addressString.length < 9) return String(addressString);
+  return `${addressString.slice(0, 5)}...${addressString.slice(-4)}`;
 }
 
 export function formatProbability(p: number): string {
@@ -73,14 +76,20 @@ export function formatProbability(p: number): string {
 // REAL Wallet Connection Functions
 export async function isFreighterAvailable(): Promise<boolean> {
   if (typeof window === "undefined") return false;
-  return isConnected();
+  try {
+    const res = await isConnected();
+    return res.isConnected;
+  } catch (e) {
+    return false;
+  }
 }
 
 export async function getWalletAddress(): Promise<string | null> {
   if (typeof window === "undefined") return null;
   try {
-    const address = await getAddress();
-    return address || null;
+    const res: any = await getAddress();
+    if (!res) return null;
+    return typeof res === "string" ? res : (res.address || res.publicKey || null);
   } catch (e) {
     console.error("Error getting address:", e);
     return null;
@@ -96,9 +105,10 @@ export async function connectWallet(type: WalletType = "freighter"): Promise<str
       if (!isAllowedValue) {
         await requestAccess();
       }
-      const addr = await getAddress();
+      const res: any = await getAddress();
+      const addr = typeof res === "string" ? res : (res.address || res.publicKey);
       console.log("FREIGHTER CONNECTED:", addr);
-      return addr;
+      return addr || null;
     } else if (type === "albedo") {
       const res = await albedo.publicKey({});
       return res.pubkey;

@@ -166,11 +166,18 @@ export async function submitTrade(params: any) {
            throw new Error("Transaction signature declined by user.");
         }
         
+        // Handle both string and object responses from Freighter (which returns signedTxXdr)
+        const signedXdr = typeof signedRes === "string" ? signedRes : (signedRes.signedTxXdr || "");
+        
+        if (!signedXdr) {
+           throw new Error("Failed to extract signed transaction from wallet.");
+        }
+
         // --- REAL SUBMISSION MAGIC ---
         // Dynamically load SDK on client AGAIN to parse the response
         let ClientSDK = await import("@stellar/stellar-sdk");
         const server = new ClientSDK.rpc.Server("https://soroban-testnet.stellar.org");
-        const signedTx = ClientSDK.TransactionBuilder.fromXDR(signedRes.signedTransaction, "Test SDF Network ; September 2015");
+        const signedTx = ClientSDK.TransactionBuilder.fromXDR(signedXdr, "Test SDF Network ; September 2015");
         
         try {
            // This will try to push it to the network!

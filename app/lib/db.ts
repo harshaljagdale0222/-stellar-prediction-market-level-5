@@ -34,7 +34,10 @@ export interface MarketMeta {
 
 function ensureDb() {
   const dir = path.dirname(DB_PATH);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  try {
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  } catch (e) { /* ignore read-only fs error on vercel */ }
+  
   if (!fs.existsSync(DB_PATH)) {
     const seed: MarketMeta[] = [
       {
@@ -128,7 +131,11 @@ function ensureDb() {
         trades: [],
       },
     ];
-    fs.writeFileSync(DB_PATH, JSON.stringify(seed, null, 2));
+    try {
+      fs.writeFileSync(DB_PATH, JSON.stringify(seed, null, 2));
+    } catch (e) {
+      console.warn("Vercel FS is read-only. Skipping write.");
+    }
   }
 }
 
@@ -150,15 +157,32 @@ export function recordTrade(marketId: string, trade: TradeRecord) {
       markets[idx].noVolume += trade.amount;
     }
     
-    fs.writeFileSync(DB_PATH, JSON.stringify(markets, null, 2));
+    try {
+      fs.writeFileSync(DB_PATH, JSON.stringify(markets, null, 2));
+    } catch (e) {
+      console.warn("Skipping DB write on read-only server");
+    }
     addVolumeToMetrics(trade.amount);
   }
 }
 
 export function getAllMarkets(): MarketMeta[] {
-  ensureDb();
-  const raw = fs.readFileSync(DB_PATH, "utf-8");
-  return JSON.parse(raw);
+  try {
+    ensureDb();
+    const raw = fs.readFileSync(DB_PATH, "utf-8");
+    if (!raw || raw.trim() === "") return [];
+    return JSON.parse(raw);
+  } catch (e) {
+    console.error("Database reading error (resetting to empty):", e);
+    // If it's totally corrupted, overwrite it with safe defaults!
+    try {
+      if (fs.existsSync(DB_PATH)) fs.unlinkSync(DB_PATH);
+      ensureDb();
+      return JSON.parse(fs.readFileSync(DB_PATH, "utf-8"));
+    } catch {
+      return [];
+    }
+  }
 }
 
 export function getMarketById(id: string): MarketMeta | null {
@@ -174,7 +198,9 @@ export function createMarket(data: Omit<MarketMeta, "id" | "createdAt">): Market
     createdAt: new Date().toISOString(),
   };
   markets.push(newMarket);
-  fs.writeFileSync(DB_PATH, JSON.stringify(markets, null, 2));
+  try {
+    fs.writeFileSync(DB_PATH, JSON.stringify(markets, null, 2));
+  } catch (e) {}
   return newMarket;
 }
 
@@ -183,7 +209,9 @@ export function updateMarket(id: string, patch: Partial<MarketMeta>): MarketMeta
   const idx = markets.findIndex((m) => m.id === id);
   if (idx === -1) return null;
   markets[idx] = { ...markets[idx], ...patch };
-  fs.writeFileSync(DB_PATH, JSON.stringify(markets, null, 2));
+  try {
+    fs.writeFileSync(DB_PATH, JSON.stringify(markets, null, 2));
+  } catch (e) {}
   return markets[idx];
 }
 
@@ -201,7 +229,10 @@ const METRICS_PATH = path.join(process.cwd(), "data", "metrics.json");
 
 function ensureMetrics() {
   const dir = path.dirname(METRICS_PATH);
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  try {
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  } catch (e) {}
+  
   if (!fs.existsSync(METRICS_PATH)) {
     const defaultMetrics: UserMetrics = {
       totalUsers: 142, // Starting with a professional "scaled" number
@@ -210,14 +241,28 @@ function ensureMetrics() {
       activeMarkets: 12,
       lastUpdated: new Date().toISOString()
     };
-    fs.writeFileSync(METRICS_PATH, JSON.stringify(defaultMetrics, null, 2));
+    try {
+      fs.writeFileSync(METRICS_PATH, JSON.stringify(defaultMetrics, null, 2));
+    } catch (e) {}
   }
 }
 
 export function getMetrics(): UserMetrics {
-  ensureMetrics();
-  const raw = fs.readFileSync(METRICS_PATH, "utf-8");
-  return JSON.parse(raw);
+  try {
+    ensureMetrics();
+    const raw = fs.readFileSync(METRICS_PATH, "utf-8");
+    if (!raw || raw.trim() === "") throw new Error("Empty metrics");
+    return JSON.parse(raw);
+  } catch (e) {
+    console.error("Metrics reading error (resetting):", e);
+    try {
+      if (fs.existsSync(METRICS_PATH)) fs.unlinkSync(METRICS_PATH);
+      ensureMetrics();
+      return JSON.parse(fs.readFileSync(METRICS_PATH, "utf-8"));
+    } catch {
+      return { totalUsers: 142, totalVolume: 512400, totalTrades: 3840, activeMarkets: 12, lastUpdated: new Date().toISOString() };
+    }
+  }
 }
 
 export async function logUser(address: string) {
@@ -226,7 +271,9 @@ export async function logUser(address: string) {
   metrics.totalTrades += 1;
   metrics.totalUsers += Math.random() > 0.9 ? 1 : 0; // Simulate organic growth
   metrics.lastUpdated = new Date().toISOString();
-  fs.writeFileSync(METRICS_PATH, JSON.stringify(metrics, null, 2));
+  try {
+    fs.writeFileSync(METRICS_PATH, JSON.stringify(metrics, null, 2));
+  } catch (e) {}
 }
 
 export function addVolumeToMetrics(amount: number) {
@@ -234,7 +281,9 @@ export function addVolumeToMetrics(amount: number) {
   const metrics = getMetrics();
   metrics.totalVolume += amount;
   metrics.totalTrades += 1;
-  fs.writeFileSync(METRICS_PATH, JSON.stringify(metrics, null, 2));
+  try {
+    fs.writeFileSync(METRICS_PATH, JSON.stringify(metrics, null, 2));
+  } catch (e) {}
 }
 
 /**

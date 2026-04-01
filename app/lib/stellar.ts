@@ -149,7 +149,6 @@ export async function submitTrade(params: any) {
 
     const txHash = Array.from({length: 32}, () => Math.floor(Math.random() * 16).toString(16)).join("");
 
-    // Update the database immediately to show the trade in the UI
     const res = await fetch(`/api/markets/${marketId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -161,7 +160,10 @@ export async function submitTrade(params: any) {
       }),
     });
 
-    if (!res.ok) throw new Error("Failed to update database");
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.error || `Database update failed with status: ${res.status}`);
+    }
 
     return { 
       txHash: txHash.slice(0, 10), 
